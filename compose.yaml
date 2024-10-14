@@ -2,10 +2,10 @@ services:
   api:
     container_name: api
     build: api-gemma2
+    volumes:
+      - ./api-gemma2/src:/app/src
     networks:
       - custom_network
-    ports:
-      - 8000:8000
   proxy:
     container_name: proxy
     build: proxy-nginx

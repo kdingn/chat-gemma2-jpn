@@ -1,16 +1,17 @@
 FROM debian:bullseye-slim
-ENV HOME=/root
+RUN apt update
 
-RUN apt update && \
-    apt install -y \
-    curl
-
+# install rye
+WORKDIR /root
+RUN apt install -y curl
 RUN curl -sSf https://rye.astral.sh/get | RYE_INSTALL_OPTION="--yes" bash
-ENV PATH="$HOME/.rye/shims:$PATH"
+ENV PATH="/root/.rye/shims:$PATH"
 
-WORKDIR $HOME
-COPY .python-version pyproject.toml $HOME
+# build python
+WORKDIR /app
+COPY .python-version pyproject.toml /app/
 RUN rye sync
 
-COPY main.py $HOME
-CMD ["/bin/bash", "-c", "source .venv/bin/activate && uvicorn main:app --host 0.0.0.0 --reload"]
+# run fastapi
+WORKDIR /app/src
+CMD ["/bin/bash", "-c", "source /app/.venv/bin/activate && uvicorn main:app --host 0.0.0.0 --reload"]
