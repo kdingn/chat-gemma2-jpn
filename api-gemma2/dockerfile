@@ -9,5 +9,8 @@ RUN curl -sSf https://rye.astral.sh/get | RYE_INSTALL_OPTION="--yes" bash
 ENV PATH="$HOME/.rye/shims:$PATH"
 
 WORKDIR $HOME
-COPY . $HOME
+COPY .python-version pyproject.toml $HOME
 RUN rye sync
+
+COPY main.py $HOME
+CMD ["/bin/bash", "-c", "source .venv/bin/activate && uvicorn main:app --host 0.0.0.0 --reload"]
