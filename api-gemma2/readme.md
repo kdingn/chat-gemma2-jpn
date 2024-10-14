@@ -5,8 +5,8 @@ This repository contains a Dockerfile for creating an API server that utilizes t
 Before building the API server, please complete the following steps:
 1. Accept the Terms of Use for the Gemma 2 Model on the [Hugging Face model page](https://huggingface.co/google/gemma-2-2b-jpn-it).
 2. Generate a Hugging Face access token on the [settings page](https://huggingface.co/settings/tokens).
-3. Edit the token permissions to include access to the Gemma 2 JPN Model in the Repositories section.
-4. Create a file named .env.secret in the root directory of this project and add your Hugging Face access token as follows:
+3. Edit the *token permissions* to include access to the Gemma 2 JPN Model in the Repositories section.
+4. Create a file named `.env.secret` in the root directory of this project and add your Hugging Face access token as follows:
     ```text
     HF_TOKEN="hf_your_access_token"
     ```
