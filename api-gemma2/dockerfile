@@ -1,0 +1,13 @@
+FROM debian:bullseye-slim
+ENV HOME=/root
+
+RUN apt update && \
+    apt install -y \
+    curl
+
+RUN curl -sSf https://rye.astral.sh/get | RYE_INSTALL_OPTION="--yes" bash
+ENV PATH="$HOME/.rye/shims:$PATH"
+
+WORKDIR $HOME
+COPY . $HOME
+RUN rye sync
