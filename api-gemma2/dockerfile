@@ -12,6 +12,12 @@ WORKDIR /app
 COPY .python-version pyproject.toml /app/
 RUN rye sync
 
-# run fastapi
+# model download
 WORKDIR /app/src
+RUN apt install -y git
+COPY .env /app/
+COPY ./src/download.py /app/src/
+RUN /bin/bash -c "source /app/.venv/bin/activate && python download.py"
+
+# run fastapi
 CMD ["/bin/bash", "-c", "source /app/.venv/bin/activate && uvicorn main:app --host 0.0.0.0 --reload"]

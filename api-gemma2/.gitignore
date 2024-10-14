@@ -11,3 +11,4 @@ wheels/
 
 requirements.lock
 requirements-dev.lock
+.env
