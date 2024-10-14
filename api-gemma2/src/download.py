@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 from huggingface_hub import login
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-load_dotenv("../.env")
+load_dotenv("../.env.public")
+load_dotenv("../.env.secret")
 hf_token = os.environ["HF_TOKEN"]
 model_name = os.environ["MODEL_NAME"]
 model_dir = os.environ["MODEL_DIR"]

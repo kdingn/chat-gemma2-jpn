@@ -15,7 +15,7 @@ RUN rye sync
 # model download
 WORKDIR /app/src
 RUN apt install -y git
-COPY .env /app/
+COPY .env.public .env.secret /app/
 COPY ./src/download.py /app/src/
 RUN /bin/bash -c "source /app/.venv/bin/activate && python download.py"
 
