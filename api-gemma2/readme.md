@@ -23,7 +23,7 @@ docker build -t api-gemma2 .
 docker run -d -p 8000:8000 -v $PWD/src:/app/src api-gemma2
 ```
 
-Note: The build process, which includes downloading the Gemma 2 Model and setting up the Python environment, may take approximately 10 minutes or longer.
+Note: The build process, which includes downloading the Gemma 2 Model and setting up the Python environment, may take 10 to 20 minutes or longer. The actual time can vary depending on your internet connection speed and system performance.
 
 ## Usage
 Once the container is running, you can access the API server at http://localhost:8000.
