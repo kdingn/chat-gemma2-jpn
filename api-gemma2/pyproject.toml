@@ -6,9 +6,6 @@ authors = []
 dependencies = [
     "fastapi>=0.115.2",
     "uvicorn[standard]>=0.31.1",
-    "huggingface-hub[inference]>=0.25.2",
-    "transformers>=4.45.2",
-    "torch>=2.4.1",
 ]
 requires-python = ">= 3.11"
 

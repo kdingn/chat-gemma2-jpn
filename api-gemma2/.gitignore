@@ -9,6 +9,7 @@ wheels/
 # venv
 .venv
 
+uv.lock
 requirements.lock
 requirements-dev.lock
 .env.secret

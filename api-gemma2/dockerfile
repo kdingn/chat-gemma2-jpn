@@ -1,23 +1,22 @@
-FROM debian:bullseye-slim
-RUN apt update
+# Stage 1: Model download
+FROM debian:bullseye-slim AS model-downloader
+COPY .env.public .env.secret clone_model.sh ./
+RUN apt update && \
+    apt install -y --no-install-recommends --no-install-suggests \
+    git \
+    git-lfs
+RUN chmod +x clone_model.sh
+RUN ./clone_model.sh /app/model && rm .env.secret
 
-# install rye
-WORKDIR /root
-RUN apt install -y curl
-RUN curl -sSf https://rye.astral.sh/get | RYE_INSTALL_OPTION="--yes" bash
-ENV PATH="/root/.rye/shims:$PATH"
-
-# build python
+# Stage 2: Application runtime
+FROM python:3.11.10-slim-bullseye
+COPY --from=model-downloader /app/model /app/model
+# install packages
 WORKDIR /app
-COPY .python-version pyproject.toml /app/
-RUN rye sync
-
-# model download
-WORKDIR /app/src
-RUN apt install -y git
-COPY .env.public .env.secret /app/
-COPY ./src/download.py /app/src/
-RUN /bin/bash -c "source /app/.venv/bin/activate && python download.py"
-
+RUN pip install -U pip && pip install uv
+COPY pyproject.toml /app/
+RUN uv sync
 # run fastapi
+WORKDIR /app/src
+COPY ./src/main.py /app/src/
 CMD ["/bin/bash", "-c", "source /app/.venv/bin/activate && uvicorn main:app --host 0.0.0.0 --reload"]
