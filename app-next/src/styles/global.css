@@ -1,0 +1,55 @@
+:root {
+  color-scheme: light dark;
+  --background-color: light-dark(#ffffff, #242936);
+  --background-color-2: light-dark(#fafafa, #1f2430);
+  --outline-color: light-dark(#444444, #171b24);
+  --text-color: light-dark(#444444, #cccac2);
+}
+
+body {
+  margin: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.content-flex-center {
+  display: flex;
+  justify-content: center;
+}
+
+.header {
+  outline: solid;
+  outline-width: 1px;
+  outline-color: var(--outline-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  font-size: 22px;
+  font-weight: 800;
+  height: 30px;
+  background-color: var(--background-color-2);
+}
+
+.header-title-container {
+  display: flex;
+  align-items: center;
+}
+
+.header-icon {
+  font-size: 22px;
+}
+
+.header-theme-icon {
+  margin-top: 4px;
+}
+
+.header-title {
+  margin-left: 1px;
+  margin-top: -2px;
+}
+
+.content-width {
+  width: 800px;
+  padding: 10px 40px 0px 40px;
+}
