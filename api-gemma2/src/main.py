@@ -1,4 +1,5 @@
 import torch
+from pydantic import BaseModel
 from fastapi import FastAPI
 from transformers import pipeline
 
@@ -10,19 +11,23 @@ pipe = pipeline(
 )
 
 
+class ChatRequest(BaseModel):
+    message: str
+
+
 @app.get("/")
 async def root():
     return {"response": "Hello World!"}
 
 
 @app.post("/chat")
-async def chat(message):
+async def chat(request: ChatRequest):
     messages = [
         {
             "role": "user",
-            "content": message,
+            "content": request.message,
         },
     ]
     outputs = pipe(messages, return_full_text=False, max_new_tokens=256)
     assistant_response = outputs[0]["generated_text"].strip()
-    return {"response": assistant_response}
+    return {"message": assistant_response}
