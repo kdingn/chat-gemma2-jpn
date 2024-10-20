@@ -1,5 +1,7 @@
 import "@/styles/global.css";
 import DiamondIcon from "@mui/icons-material/Diamond";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import Link from "next/link";
 import { ThemeSwitch } from "./ThemeSwitch";
 
 function Header() {
@@ -11,7 +13,15 @@ function Header() {
         <span className="header-title">{title}</span>
       </div>
       <div className="header-theme-icon">
-        <ThemeSwitch />
+        <div className="px-2">
+          <ThemeSwitch />
+        </div>
+        <Link
+          href="https://github.com/kdingn/chat-gemma2-jpn"
+          className="padding-left-10"
+        >
+          <GitHubIcon />
+        </Link>
       </div>
     </div>
   );
