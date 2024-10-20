@@ -6,6 +6,13 @@ services:
       - ./api-gemma2/src:/app/src
     networks:
       - custom_network
+  app:
+    container_name: app
+    build: app-next
+    volumes:
+      - ./app-next/src:/app/src
+    networks:
+      - custom_network
   proxy:
     container_name: proxy
     build: proxy-nginx
