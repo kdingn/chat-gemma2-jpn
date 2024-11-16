@@ -7,16 +7,22 @@ export default function Home() {
   const [response, setResponse] = useState("");
 
   const sendMessage = async () => {
-    const response = await fetch("/api/chat", {
+    const res = await fetch("/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ message: message }),
     });
-    if (response.ok) {
-      const data = await response.json();
-      setResponse(data.message);
+    if (res.ok && res.body) {
+      const reader = res.body.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const text = new TextDecoder().decode(value);
+        console.log(text);
+        setResponse((prev) => prev + text);
+      }
     }
   };
 

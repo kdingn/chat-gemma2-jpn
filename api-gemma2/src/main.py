@@ -1,7 +1,10 @@
 import torch
 from pydantic import BaseModel
 from fastapi import FastAPI
-from transformers import pipeline
+from transformers import pipeline, TextIteratorStreamer
+from fastapi.responses import StreamingResponse
+from threading import Thread
+
 
 app = FastAPI(root_path="/api")
 pipe = pipeline(
@@ -15,19 +18,34 @@ class ChatRequest(BaseModel):
     message: str
 
 
-@app.get("/")
-async def root():
-    return {"response": "Hello World!"}
-
-
 @app.post("/chat")
-async def chat(request: ChatRequest):
+def chat(request: ChatRequest):
+    def generate(pipe, messages, streamer):
+        pipe(
+            messages,
+            return_full_text=False,
+            max_new_tokens=256,
+            streamer=streamer,
+        )
+
+    def stream_response(streamer):
+        for text in streamer:
+            yield text
+
     messages = [
         {
             "role": "user",
             "content": request.message,
         },
     ]
-    outputs = pipe(messages, return_full_text=False, max_new_tokens=256)
-    assistant_response = outputs[0]["generated_text"].strip()
-    return {"message": assistant_response}
+
+    streamer = TextIteratorStreamer(
+        pipe.tokenizer, skip_prompt=True, skip_special_tokens=True
+    )
+
+    thread = Thread(target=generate, args=(pipe, messages, streamer))
+    thread.start()
+
+    return StreamingResponse(
+        stream_response(streamer), media_type="text/plain"
+    )
