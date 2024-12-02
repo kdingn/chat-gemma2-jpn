@@ -1,5 +1,6 @@
 # Stage 1: Model download
-FROM debian:bullseye-slim AS model-downloader
+# FROM debian:bullseye-slim AS model-downloader
+FROM debian:bullseye-slim@sha256:60a596681410bd31a48e5975806a24cd78328f3fd6b9ee5bc64dca6d46a51f29 AS model-downloader
 RUN apt update && \
     apt install -y --no-install-recommends --no-install-suggests \
     git \
@@ -10,7 +11,8 @@ RUN ./clone_model.sh /app/model && rm .env.secret
 RUN rm -rf /app/model/.git
 
 # Stage 2: Application runtime
-FROM python:3.11.10-slim-bullseye
+# FROM python:3.11.10-slim-bullseye
+FROM python:3.11.10-slim-bullseye@sha256:d910a25afa706e0b2da4b59990fb59c0495eeab597b5cd777bbdcda8b6530b7e
 COPY --from=model-downloader /app/model /app/model
 # install packages
 WORKDIR /app
