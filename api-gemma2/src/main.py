@@ -6,7 +6,7 @@ from fastapi.responses import StreamingResponse
 from threading import Thread
 
 
-app = FastAPI(root_path="/api")
+app = FastAPI(root_path="/api-gemma2")
 pipe = pipeline(
     "text-generation",
     model="../model",

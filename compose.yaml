@@ -1,6 +1,6 @@
 services:
-  api:
-    container_name: api
+  api-gemma2:
+    container_name: api-gemma2
     build: api-gemma2
     volumes:
       - ./api-gemma2/src:/app/src
@@ -19,7 +19,8 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      - api
+      - api-gemma2
+      - app
     networks:
       - custom_network
 

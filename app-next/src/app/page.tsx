@@ -7,7 +7,7 @@ export default function Home() {
   const [response, setResponse] = useState("");
 
   const sendMessage = async () => {
-    const res = await fetch("/api/chat", {
+    const res = await fetch("/api-gemma2/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
