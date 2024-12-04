@@ -1,2 +1,4 @@
-FROM debian:bullseye-slim@sha256:60a596681410bd31a48e5975806a24cd78328f3fd6b9ee5bc64dca6d46a51f29
-
+# FROM ghcr.io/aivis-project/aivisspeech-engine:nvidia-latest
+FROM ghcr.io/aivis-project/aivisspeech-engine:cpu-latest
+ENTRYPOINT [ "/entrypoint.sh"  ]
+CMD [ "gosu", "user", "/opt/python/bin/poetry", "run", "python", "./run.py", "--host", "0.0.0.0" ]

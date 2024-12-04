@@ -1,4 +1,18 @@
 services:
+  api-aivisspeech:
+    container_name: api-aivisspeech
+    build: api-aivisspeech
+    volumes:
+      - ./api-aivisspeech/mount/.local/share/AivisSpeech-Engine:/home/user/.local/share/AivisSpeech-Engine-Dev
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    networks:
+      - custom_network
   api-gemma2:
     container_name: api-gemma2
     build: api-gemma2
@@ -19,6 +33,7 @@ services:
     ports:
       - 8080:8080
     depends_on:
+      - api-aivisspeech
       - api-gemma2
       - app
     networks:
