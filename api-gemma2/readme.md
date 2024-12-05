@@ -1,35 +1,35 @@
 # Gemma 2 API Server
-This repository contains a Dockerfile for creating an API server that utilizes the [Gemma 2 JPN Model](https://huggingface.co/google/gemma-2-2b-jpn-it). The server provides an easy-to-use interface for interacting with the Gemma 2 model.
+[Gemma 2 JPN モデル](https://huggingface.co/google/gemma-2-2b-jpn-it) を利用する API サーバーを作成するための Dockerfile が含まれています。
 
-## Prerequisites
-Before building the API server, please complete the following steps:
-1. Accept the Terms of Use for the Gemma 2 Model on the [Hugging Face model page](https://huggingface.co/google/gemma-2-2b-jpn-it).
-2. Generate a Hugging Face access token on the [settings page](https://huggingface.co/settings/tokens).
-3. Edit the *token permissions* to include access to the Gemma 2 JPN Model in the Repositories section.
-4. Create a file named `.env.secret` in the root directory of this project and add your Hugging Face access token as follows:
+## 前提条件
+APIサーバーを構築する前に、以下の手順を完了してください：
+1. [Hugging Face モデルページ](https://huggingface.co/google/gemma-2-2b-jpn-it)で Gemma 2 モデルの利用規約に同意してください。
+2. [設定ページ](https://huggingface.co/settings/tokens)で Hugging Face アクセス・トークンを生成してください。
+3. トークンの権限を編集し、「リポジトリ」セクションで Gemma 2 JPN モデルへのアクセス権を付与してください。
+4. `/api-gemma2/.env.secret` というファイルを作成し、以下の形式でHugging Faceアクセス・トークンを追加してください：
     ```text
     HF_TOKEN="hf_your_access_token"
     ```
-    Replace `hf_your_access_token` with your actual Hugging Face access token.
+    `hf_your_access_token` を実際の Hugging Face アクセス・トークンに置き換えてください。
 
-## Building and Running the Container
-To build and run the API server container, follow these steps:
-1. Build the Docker image:
+## コンテナのビルドと実行
+APIサーバーコンテナをビルドして実行するには、以下の手順に従ってください：
+1. Dockerイメージをビルドします：
 ```sh
 docker build -t api-gemma2 .
 ```
-2. Run the container:
+2. コンテナを実行します：
 ```sh
 docker run -d -p 8000:8000 -v $PWD/src:/app/src api-gemma2
 ```
 
-Note: The build process, which includes downloading the Gemma 2 Model and setting up the Python environment, may take 10 to 20 minutes or longer. The actual time can vary depending on your internet connection speed and system performance.
+注意：ビルドプロセスには、Gemma 2 モデルのダウンロードや Python 環境のセットアップが含まれるため、10～20分以上かかる場合があります。所要時間は通信速度やシステム性能によって異なります。
 
-## Usage
-Once the container is running, you can access the API server at http://localhost:8000.
-Additionally, you can view the automatically generated API documentation by navigating to:
+## 使用方法
+コンテナが実行中の場合、APIサーバーに以下のURLでアクセスできます：
+- http://localhost:8000.
 
+また、自動生成されたAPIドキュメントは以下から確認できます：
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
-Refer to these documentation pages for available endpoints and usage instructions.
