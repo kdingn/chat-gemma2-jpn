@@ -17,3 +17,6 @@ docker compose up --build -d
 Docker 環境の構築後、提供されている `sample.ipynb` を開いて実行することで Gemma 2 と AivisSpeech を連携した対話システムの動作を確認できます。
 
 ## 実行例
+https://github.com/user-attachments/assets/293f9ec6-3d4a-4dd6-a816-fb58489197cd
+
+
