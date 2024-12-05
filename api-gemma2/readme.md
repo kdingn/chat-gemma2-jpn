@@ -27,7 +27,7 @@ docker run -d -p 8000:8000 -v $PWD/src:/app/src api-gemma2
 
 ## 使用方法
 コンテナ起動中 APIサーバーに以下のURLでアクセスできます：
-- http://localhost:8000.
+- http://localhost:8000
 
 自動生成されたAPIドキュメントは以下から確認できます：
 - Swagger UI: http://localhost:8000/docs
