@@ -1,6 +1,6 @@
 # AivisSpeech API Server
 
-[Aivis Project](https://aivis-project.com/) でのプロダクトである [AivisSpeech-Engine](https://github.com/Aivis-Project/AivisSpeech-Engine) を起動するための Dockerfile が含まれています．ライセンスや利用方法は[公式レポジトリ](https://github.com/Aivis-Project/AivisSpeech-Engine/blob/master/README.md)をご参照ください．
+[Aivis Project](https://aivis-project.com/) でのプロダクトである [AivisSpeech-Engine](https://github.com/Aivis-Project/AivisSpeech-Engine) を起動するための Dockerfile が含まれています．ライセンスや利用方法は公式レポジトリをご参照ください．
 
 ## GPU 利用
 
