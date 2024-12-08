@@ -27,6 +27,13 @@ services:
       - ./app-next/src:/app/src
     networks:
       - custom_network
+  app-chainlit:
+    container_name: app-chainlit
+    build: app-chainlit
+    volumes:
+      - ./app-chainlit/src:/app/src
+    networks:
+      - custom_network
   proxy:
     container_name: proxy
     build: proxy-nginx

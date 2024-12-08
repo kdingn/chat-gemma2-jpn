@@ -1,0 +1,10 @@
+FROM python:3.11.10-slim-bullseye@sha256:d910a25afa706e0b2da4b59990fb59c0495eeab597b5cd777bbdcda8b6530b7e
+WORKDIR /app
+RUN pip install -U pip && pip install uv
+COPY pyproject.toml /app/
+RUN uv sync
+WORKDIR /app/src
+COPY ./src/app.py /app/src/
+ENV CHAINLIT_ROOT_PATH=/app-chainlit
+ENTRYPOINT ["/app/.venv/bin/chainlit"]
+CMD ["run", "/app/src/app.py", "--host", "0.0.0.0", "-w"]
