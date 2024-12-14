@@ -104,7 +104,7 @@ async def main(message: cl.Message):
 
     # show response on browser
     async for response_message in create_response_message(message.content):
-        elements = create_response_elemeents(response_message)
+        elements = create_response_elemeents(response_message, auto_play=False)
         await cl.Message(
             content=response_message,
             elements=elements,
