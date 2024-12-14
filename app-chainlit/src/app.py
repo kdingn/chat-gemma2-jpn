@@ -4,8 +4,40 @@ import json
 import requests
 
 
+def clean_text(text):
+    text = text.replace(" *", "")
+    text = text.replace("* ", "")
+    text = text.replace("*", "")
+    return text
+
+
 def create_response_message(text):
-    response_message = text
+    endpoint = "http://api-gemma2:8000/chat"
+
+    prompt = """あなたは先生です．以下のことに注意して回答してください．
+    * 箇条書きを避ける
+    * 丁寧な言葉遣いを心がける
+    * 自然な会話文で回答する
+    * 特殊文字の使用を避ける
+    質問: """
+    prompt += text
+
+    message_json = {"message": prompt}
+    res = requests.post(endpoint, json=message_json, stream=True)
+
+    # current_chunk = ""
+    # for chunk in res.iter_content(chunk_size=50, decode_unicode=True):
+    #     if chunk:
+    #         current_chunk += chunk
+    #         if "。" in current_chunk:
+    #             sentences = current_chunk.split("。")[:-1]
+    #             current_chunk = current_chunk.split("。")[-1]
+    #             for sentence in sentences:
+    #                 audio = create_voice_wav(clean_text(sentence))
+
+    response_message = res.content.decode("utf-8")
+    response_message = clean_text(response_message)
+    print(response_message)
     return response_message
 
 
@@ -38,7 +70,6 @@ def create_response_elemeents(text, auto_play=True):
     audio = create_voice_wav(text)
     elements = [
         cl.Audio(
-            name=text,
             content=audio,
             display="inline",
             auto_play=auto_play,
