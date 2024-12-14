@@ -29,6 +29,11 @@ def create_voice_wav(text):
     return res.content
 
 
+@cl.on_chat_start
+def on_chat_start():
+    cl.user_session.set("msessage_history", [])
+
+
 @cl.on_message
 async def main(message: cl.Message):
     audio = create_voice_wav(message.content)
@@ -45,3 +50,11 @@ async def main(message: cl.Message):
         content=f"Received: {message.content}",
         elements=elements,
     ).send()
+
+    message_history = cl.user_session.get("message_history")
+    if message_history is None:
+        message_history = []
+    message_history.append({"質問": message.content})
+    message_history.append({"回答": message.content})
+    cl.user_session.set("message_history", message_history)
+    print(message_history)
