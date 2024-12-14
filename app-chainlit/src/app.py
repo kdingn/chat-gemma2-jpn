@@ -4,6 +4,11 @@ import json
 import requests
 
 
+def create_response_message(text):
+    response_message = text
+    return response_message
+
+
 def create_voice_wav(text):
     endpoint = "http://api-aivisspeech:10101"
 
@@ -58,14 +63,15 @@ async def main(message: cl.Message):
     message_history.append({"質問": message.content})
 
     # show response on browser
-    elements = create_response_elemeents(message.content, auto_play=False)
+    response_message = create_response_message(message.content)
+    elements = create_response_elemeents(response_message)
     await cl.Message(
-        content=f"Received: {message.content}",
+        content=f"Received: {response_message}",
         elements=elements,
     ).send()
 
     # save message history
-    message_history.append({"回答": message.content})
+    message_history.append({"回答": response_message})
     cl.user_session.set("message_history", message_history)
 
     # show logs on console
