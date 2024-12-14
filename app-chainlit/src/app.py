@@ -106,7 +106,7 @@ async def main(message: cl.Message):
     async for response_message in create_response_message(message.content):
         elements = create_response_elemeents(response_message)
         await cl.Message(
-            content=f"Received: {response_message}",
+            content=response_message,
             elements=elements,
         ).send()
 
