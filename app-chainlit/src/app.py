@@ -2,6 +2,15 @@ import chainlit as cl
 
 import json
 import requests
+import re
+
+SENTENCE_SPLITTERS = ["。", "！", "？"]
+
+
+def split_sentences(sentences, separator):
+    separators = "".join(separator)
+    pattern = rf"(?<=[{separators}])"
+    return re.split(pattern, sentences)
 
 
 def clean_text(text):
@@ -11,7 +20,7 @@ def clean_text(text):
     return text
 
 
-def create_response_message(text):
+async def create_response_message(text):
     endpoint = "http://api-gemma2:8000/chat"
 
     prompt = """あなたは先生です．以下のことに注意して回答してください．
@@ -25,20 +34,20 @@ def create_response_message(text):
     message_json = {"message": prompt}
     res = requests.post(endpoint, json=message_json, stream=True)
 
-    # current_chunk = ""
-    # for chunk in res.iter_content(chunk_size=50, decode_unicode=True):
-    #     if chunk:
-    #         current_chunk += chunk
-    #         if "。" in current_chunk:
-    #             sentences = current_chunk.split("。")[:-1]
-    #             current_chunk = current_chunk.split("。")[-1]
-    #             for sentence in sentences:
-    #                 audio = create_voice_wav(clean_text(sentence))
-
-    response_message = res.content.decode("utf-8")
-    response_message = clean_text(response_message)
-    print(response_message)
-    return response_message
+    current_chunk = ""
+    for chunk in res.iter_content(chunk_size=50, decode_unicode=True):
+        if chunk:
+            current_chunk += chunk
+            if any(
+                splitter in current_chunk for splitter in SENTENCE_SPLITTERS
+            ):
+                splitted_sentences = split_sentences(
+                    current_chunk, separator=SENTENCE_SPLITTERS
+                )
+                sentences = splitted_sentences[:-1]
+                current_chunk = splitted_sentences[-1]
+                for sentence in sentences:
+                    yield clean_text(sentence)
 
 
 def create_voice_wav(text):
@@ -89,21 +98,18 @@ async def on_chat_start():
 
 @cl.on_message
 async def main(message: cl.Message):
-    # get message hisotry from user_session
+    # add current message to message hisotry
     message_history = cl.user_session.get("message_history")
     message_history.append({"質問": message.content})
 
     # show response on browser
-    response_message = create_response_message(message.content)
-    elements = create_response_elemeents(response_message)
-    await cl.Message(
-        content=f"Received: {response_message}",
-        elements=elements,
-    ).send()
+    async for response_message in create_response_message(message.content):
+        elements = create_response_elemeents(response_message)
+        await cl.Message(
+            content=f"Received: {response_message}",
+            elements=elements,
+        ).send()
 
-    # save message history
+    # add response message to message hisotry
     message_history.append({"回答": response_message})
     cl.user_session.set("message_history", message_history)
-
-    # show logs on console
-    print(message_history)
