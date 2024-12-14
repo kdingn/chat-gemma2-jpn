@@ -5,6 +5,22 @@ import requests
 import re
 
 SENTENCE_SPLITTERS = ["。", "！", "？"]
+PROMPT_TEMPLATE = """あなたは先生です。以下のことに注意して回答してください。
+* 箇条書きを避ける。
+* 丁寧な言葉遣いを心がける。
+* 自然な会話文で回答する。
+* 特殊文字の使用を避ける。
+"""
+
+
+def create_prompt(current_message, message_history=[]):
+    prompt = PROMPT_TEMPLATE
+    for message in message_history:
+        prompt += (
+            list(message.keys())[0] + ": " + list(message.values())[0] + "\n"
+        )
+    prompt += "質問: " + current_message + "\n回答: "
+    return prompt
 
 
 def split_sentences(sentences, separator):
@@ -23,14 +39,9 @@ def clean_text(text):
 async def create_response_message(text):
     endpoint = "http://api-gemma2:8000/chat"
 
-    prompt = """あなたは先生です．以下のことに注意して回答してください．
-    * 箇条書きを避ける
-    * 丁寧な言葉遣いを心がける
-    * 自然な会話文で回答する
-    * 特殊文字の使用を避ける
-    質問: """
-    prompt += text
-
+    message_history = cl.user_session.get("message_history")
+    prompt = create_prompt(text, message_history=message_history)
+    print(prompt)
     message_json = {"message": prompt}
     res = requests.post(endpoint, json=message_json, stream=True)
 
@@ -98,18 +109,18 @@ async def on_chat_start():
 
 @cl.on_message
 async def main(message: cl.Message):
-    # add current message to message hisotry
-    message_history = cl.user_session.get("message_history")
-    message_history.append({"質問": message.content})
-
     # show response on browser
+    total_response_message = ""
     async for response_message in create_response_message(message.content):
         elements = create_response_elemeents(response_message, auto_play=False)
         await cl.Message(
             content=response_message,
             elements=elements,
         ).send()
+        total_response_message += response_message
 
-    # add response message to message hisotry
+    # add messages to message hisotry
+    message_history = cl.user_session.get("message_history")
+    message_history.append({"質問": message.content})
     message_history.append({"回答": response_message})
     cl.user_session.set("message_history", message_history)
