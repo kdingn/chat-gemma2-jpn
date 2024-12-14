@@ -29,32 +29,44 @@ def create_voice_wav(text):
     return res.content
 
 
+def create_response_elemeents(text, auto_play=True):
+    audio = create_voice_wav(text)
+    elements = [
+        cl.Audio(
+            name=text,
+            content=audio,
+            display="inline",
+            auto_play=auto_play,
+        )
+    ]
+    return elements
+
+
 @cl.on_chat_start
-def on_chat_start():
-    cl.user_session.set("msessage_history", [])
+async def on_chat_start():
+    start_message = "こんにちは！ご質問をどうぞ．"
+    cl.user_session.set("message_history", [{"回答": start_message}])
+
+    elements = create_response_elemeents(start_message, auto_play=False)
+    await cl.Message(content=start_message, elements=elements).send()
 
 
 @cl.on_message
 async def main(message: cl.Message):
-    audio = create_voice_wav(message.content)
-    elements = [
-        cl.Audio(
-            name=message.content[:10],
-            content=audio,
-            display="inline",
-            auto_play=True,
-        )
-    ]
+    # get message hisotry from user_session
+    message_history = cl.user_session.get("message_history")
+    message_history.append({"質問": message.content})
 
+    # show response on browser
+    elements = create_response_elemeents(message.content, auto_play=False)
     await cl.Message(
         content=f"Received: {message.content}",
         elements=elements,
     ).send()
 
-    message_history = cl.user_session.get("message_history")
-    if message_history is None:
-        message_history = []
-    message_history.append({"質問": message.content})
+    # save message history
     message_history.append({"回答": message.content})
     cl.user_session.set("message_history", message_history)
+
+    # show logs on console
     print(message_history)
