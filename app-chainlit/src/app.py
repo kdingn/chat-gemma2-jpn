@@ -11,6 +11,8 @@ PROMPT_TEMPLATE = """あなたは先生です。以下のことに注意して�
 * 自然な会話文で回答する。
 * 特殊文字の使用を避ける。
 """
+ENDPOINT_AIVISSPEECH = "http://api-aivisspeech:10101"
+ENDPOINT_LLM = "http://api-gemma2:8000/chat"
 
 
 def create_prompt(current_message, message_history=[]):
@@ -37,7 +39,7 @@ def clean_text(text):
 
 
 async def create_response_message(text):
-    endpoint = "http://api-gemma2:8000/chat"
+    endpoint = ENDPOINT_LLM
 
     message_history = cl.user_session.get("message_history")
     prompt = create_prompt(text, message_history=message_history)
@@ -62,7 +64,7 @@ async def create_response_message(text):
 
 
 def create_voice_wav(text):
-    endpoint = "http://api-aivisspeech:10101"
+    endpoint = ENDPOINT_AIVISSPEECH
 
     # get style id
     endpoint_speakers = endpoint + "/speakers"
