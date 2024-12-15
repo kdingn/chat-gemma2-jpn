@@ -1,4 +1,5 @@
 import chainlit as cl
+import emoji
 
 import json
 import requests
@@ -10,6 +11,8 @@ PROMPT_TEMPLATE = """あなたは先生です。以下のことに注意して�
 * 丁寧な言葉遣いを心がける。
 * 自然な会話文で回答する。
 * 特殊文字の使用を避ける。
+* 課題がある場合は解決策を提示する。
+* 課題がない場合は補足情報を追加する。
 """
 ENDPOINT_AIVISSPEECH = "http://api-aivisspeech:10101"
 ENDPOINT_LLM = "http://api-gemma2:8000/chat"
@@ -35,6 +38,9 @@ def clean_text(text):
     text = text.replace(" *", "")
     text = text.replace("* ", "")
     text = text.replace("*", "")
+    text = text.replace("「", "")
+    text = text.replace("」", "")
+    text = emoji.replace_emoji(text)
     return text
 
 
@@ -43,7 +49,6 @@ async def create_response_message(text):
 
     message_history = cl.user_session.get("message_history")
     prompt = create_prompt(text, message_history=message_history)
-    print(prompt)
     message_json = {"message": prompt}
     res = requests.post(endpoint, json=message_json, stream=True)
 
@@ -60,7 +65,9 @@ async def create_response_message(text):
                 sentences = splitted_sentences[:-1]
                 current_chunk = splitted_sentences[-1]
                 for sentence in sentences:
-                    yield clean_text(sentence)
+                    cleaned_sentence = clean_text(sentence)
+                    if len(cleaned_sentence) > 1:
+                        yield clean_text(sentence)
 
 
 def create_voice_wav(text):
@@ -102,7 +109,7 @@ def create_response_elemeents(text, auto_play=True):
 
 @cl.on_chat_start
 async def on_chat_start():
-    start_message = "こんにちは！ご質問をどうぞ．"
+    start_message = "こんにちは！なにか御用でしょうか．"
     cl.user_session.set("message_history", [{"回答": start_message}])
 
     elements = create_response_elemeents(start_message, auto_play=False)
