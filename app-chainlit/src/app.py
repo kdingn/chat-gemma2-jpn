@@ -121,7 +121,7 @@ async def main(message: cl.Message):
     # show response on browser
     total_response_message = ""
     async for response_message in create_response_message(message.content):
-        elements = create_response_elemeents(response_message, auto_play)
+        elements = create_response_elemeents(response_message)
         await cl.Message(
             content=response_message,
             elements=elements,
