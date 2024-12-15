@@ -1,3 +1,4 @@
+import aiohttp
 import chainlit as cl
 import emoji
 
@@ -70,33 +71,44 @@ async def create_response_message(text):
                         yield clean_text(sentence)
 
 
-def create_voice_wav(text):
+async def create_voice_wav(text):
     endpoint = ENDPOINT_AIVISSPEECH
 
-    # get style id
-    endpoint_speakers = endpoint + "/speakers"
-    res = requests.get(endpoint_speakers)
-    speakers = json.loads(res.content)
-    style_id = speakers[0]["styles"][3]["id"]
+    async with aiohttp.ClientSession() as session:
+        # get style id
+        endpoint_speakers = endpoint + "/speakers"
+        # res = requests.get(endpoint_speakers)
+        # speakers = json.loads(res.content)
+        # style_id = speakers[0]["styles"][3]["id"]
+        async with session.get(endpoint_speakers) as res:
+            speakers = await res.json()
+            style_id = speakers[0]["styles"][3]["id"]
 
-    # get audio query
-    endpoint_audioquery = endpoint + "/audio_query"
-    params = {"speaker": style_id, "text": text}
-    res = requests.post(endpoint_audioquery, params=params)
-    audioquery_json = json.loads(res.content)
+        # get audio query
+        endpoint_audioquery = endpoint + "/audio_query"
+        params = {"speaker": style_id, "text": text}
+        # res = requests.post(endpoint_audioquery, params=params)
+        # audioquery_json = json.loads(res.content)
+        async with session.post(endpoint_audioquery, params=params) as res:
+            audioquery_json = await res.json()
 
-    # create audio data
-    endpoint_synthesis = endpoint + "/synthesis"
-    params = {"speaker": style_id}
-    res = requests.post(
-        endpoint_synthesis, params=params, json=audioquery_json
-    )
+        # create audio data
+        endpoint_synthesis = endpoint + "/synthesis"
+        params = {"speaker": style_id}
+        # res = requests.post(
+        #     endpoint_synthesis, params=params, json=audioquery_json
+        # )
+        async with session.post(
+            endpoint_synthesis, params=params, json=audioquery_json
+        ) as res:
+            audio_data = await res.read()
 
-    return res.content
+    # return res.content
+    return audio_data
 
 
-def create_response_elemeents(text, auto_play=True):
-    audio = create_voice_wav(text)
+async def create_response_elements(text, auto_play=True):
+    audio = await create_voice_wav(text)
     elements = [
         cl.Audio(
             content=audio,
@@ -115,7 +127,7 @@ async def on_chat_start():
     cl.user_session.set("message_history", [])
 
     # show start message
-    elements = create_response_elemeents(start_message, auto_play=False)
+    elements = await create_response_elements(start_message, auto_play=False)
     await cl.Message(content=start_message, elements=elements).send()
 
 
@@ -124,7 +136,9 @@ async def main(message: cl.Message):
     # show response on browser
     total_response_message = ""
     async for response_message in create_response_message(message.content):
-        elements = create_response_elemeents(response_message, auto_play=False)
+        elements = await create_response_elements(
+            response_message, auto_play=False
+        )
         await cl.Message(
             content=response_message,
             elements=elements,
