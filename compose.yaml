@@ -25,17 +25,8 @@ services:
     build: app-chainlit
     volumes:
       - ./app-chainlit/src:/app/src
-    networks:
-      - custom_network
-  proxy:
-    container_name: proxy
-    build: proxy-nginx
     ports:
-      - 8080:8080
-    depends_on:
-      - api-aivisspeech
-      - api-gemma2
-      - app-chainlit
+      - 8000:8000
     networks:
       - custom_network
 

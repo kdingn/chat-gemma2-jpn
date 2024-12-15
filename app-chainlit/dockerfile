@@ -5,7 +5,5 @@ COPY pyproject.toml /app/
 RUN uv sync
 WORKDIR /app/src
 COPY ./src/app.py /app/src/
-# CHAINLIT_ROOT_PATH に nginx.conf の location を指定する
-ENV CHAINLIT_ROOT_PATH=/app
 ENTRYPOINT ["/app/.venv/bin/chainlit"]
 CMD ["run", "/app/src/app.py", "--host", "0.0.0.0", "-w"]
