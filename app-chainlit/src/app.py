@@ -109,9 +109,12 @@ def create_response_elemeents(text, auto_play=True):
 
 @cl.on_chat_start
 async def on_chat_start():
-    start_message = "こんにちは！なにか御用でしょうか．"
-    cl.user_session.set("message_history", [{"回答": start_message}])
+    start_message = "こんにちは！なにかご用でしょうか．"
 
+    # initialize user session
+    cl.user_session.set("message_history", [])
+
+    # show start message
     elements = create_response_elemeents(start_message, auto_play=False)
     await cl.Message(content=start_message, elements=elements).send()
 
