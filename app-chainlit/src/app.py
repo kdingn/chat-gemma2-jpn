@@ -2,7 +2,6 @@ import aiohttp
 import chainlit as cl
 import emoji
 
-import json
 import requests
 import re
 
