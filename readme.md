@@ -1,6 +1,6 @@
 # Chat Gemma2 JPN
 
-[chat-gemma2-jpn](https://github.com/kdingn/chat-gemma2-jpn) はで合成音声つきのLLMチャットアプリを構築します。アプリを構成する全てのサービスがローカルのCPU環境で稼働するため、非ネットワーク環境やGPUの利用できな環境でも利用することができます。
+Google が開発した言語モデル [Gemma 2](https://huggingface.co/google/gemma-2-2b-jpn-it) と高品質な音声合成エンジン [AivisSpeech-Engine](https://github.com/Aivis-Project/AivisSpeech-Engine) を組み合わせて合成音声つきのLLMチャットアプリを構築します。アプリを構成する全てのサービスがローカルのCPU環境で稼働するため、非ネットワーク環境やGPUの利用できない環境でも利用することができます。
 
 ![network](readme/network.png)
 
