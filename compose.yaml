@@ -20,13 +20,6 @@ services:
       - ./api-gemma2/src:/app/src
     networks:
       - custom_network
-  app:
-    container_name: app
-    build: app-next
-    volumes:
-      - ./app-next/src:/app/src
-    networks:
-      - custom_network
   app-chainlit:
     container_name: app-chainlit
     build: app-chainlit
@@ -42,7 +35,7 @@ services:
     depends_on:
       - api-aivisspeech
       - api-gemma2
-      - app
+      - app-chainlit
     networks:
       - custom_network
 
