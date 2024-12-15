@@ -76,9 +76,6 @@ async def create_voice_wav(text):
     async with aiohttp.ClientSession() as session:
         # get style id
         endpoint_speakers = endpoint + "/speakers"
-        # res = requests.get(endpoint_speakers)
-        # speakers = json.loads(res.content)
-        # style_id = speakers[0]["styles"][3]["id"]
         async with session.get(endpoint_speakers) as res:
             speakers = await res.json()
             style_id = speakers[0]["styles"][3]["id"]
@@ -86,17 +83,12 @@ async def create_voice_wav(text):
         # get audio query
         endpoint_audioquery = endpoint + "/audio_query"
         params = {"speaker": style_id, "text": text}
-        # res = requests.post(endpoint_audioquery, params=params)
-        # audioquery_json = json.loads(res.content)
         async with session.post(endpoint_audioquery, params=params) as res:
             audioquery_json = await res.json()
 
         # create audio data
         endpoint_synthesis = endpoint + "/synthesis"
         params = {"speaker": style_id}
-        # res = requests.post(
-        #     endpoint_synthesis, params=params, json=audioquery_json
-        # )
         async with session.post(
             endpoint_synthesis, params=params, json=audioquery_json
         ) as res:
