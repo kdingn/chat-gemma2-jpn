@@ -44,32 +44,6 @@ def clean_text(text):
     return text
 
 
-async def create_response_message(text):
-    endpoint = ENDPOINT_LLM
-
-    message_history = cl.user_session.get("message_history")
-    prompt = create_prompt(text, message_history=message_history)
-    message_json = {"message": prompt}
-    res = requests.post(endpoint, json=message_json, stream=True)
-
-    current_chunk = ""
-    for chunk in res.iter_content(chunk_size=50, decode_unicode=True):
-        if chunk:
-            current_chunk += chunk
-            if any(
-                splitter in current_chunk for splitter in SENTENCE_SPLITTERS
-            ):
-                splitted_sentences = split_sentences(
-                    current_chunk, separator=SENTENCE_SPLITTERS
-                )
-                sentences = splitted_sentences[:-1]
-                current_chunk = splitted_sentences[-1]
-                for sentence in sentences:
-                    cleaned_sentence = clean_text(sentence)
-                    if len(cleaned_sentence) > 1:
-                        yield clean_text(sentence)
-
-
 async def create_voice_wav(text):
     endpoint = ENDPOINT_AIVISSPEECH
 
@@ -102,12 +76,27 @@ async def create_response_elements(text, auto_play=True):
     audio = await create_voice_wav(text)
     elements = [
         cl.Audio(
+            name=text[:10] + "..." if len(text)>10 else text,
             content=audio,
             display="inline",
             auto_play=auto_play,
         )
     ]
     return elements
+
+
+async def create_response_message(text):
+    endpoint = ENDPOINT_LLM
+
+    message_history = cl.user_session.get("message_history")
+    prompt = create_prompt(text, message_history=message_history)
+    message_json = {"message": prompt}
+    res = requests.post(endpoint, json=message_json, stream=True)
+
+    for chunk in res.iter_content(chunk_size=50, decode_unicode=True):
+        if chunk:
+            yield clean_text(chunk)
+
 
 
 @cl.on_chat_start
@@ -123,21 +112,32 @@ async def on_chat_start():
 
 
 @cl.on_message
-async def main(message: cl.Message):
+async def main(input_message):
     # show response on browser
-    total_response_message = ""
-    async for response_message in create_response_message(message.content):
-        elements = await create_response_elements(
-            response_message, auto_play=False
-        )
-        await cl.Message(
-            content=response_message,
-            elements=elements,
-        ).send()
-        total_response_message += response_message
+    current_chunk = ""
+    response_message = ""
+    msg = cl.Message(content="")
+    async for chunk in create_response_message(input_message.content):
+        if chunk:
+            await msg.stream_token(chunk)
+            current_chunk += chunk
+            response_message += chunk
+            if any(
+                splitter in current_chunk for splitter in SENTENCE_SPLITTERS
+            ):
+                splitted_sentences = split_sentences(
+                    current_chunk, separator=SENTENCE_SPLITTERS
+                )
+                sentences = splitted_sentences[:-1]
+                current_chunk = splitted_sentences[-1]
+                for sentence in sentences:
+                    elements = await create_response_elements(sentence)
+                    msg.elements.extend(elements)
+                    await msg.update()
+    await msg.update()
 
     # add messages to message hisotry
     message_history = cl.user_session.get("message_history")
-    message_history.append({"質問": message.content})
+    message_history.append({"質問": input_message.content})
     message_history.append({"回答": response_message})
     cl.user_session.set("message_history", message_history)
