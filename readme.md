@@ -2,7 +2,9 @@
 
 Google が開発した言語モデル [Gemma 2](https://huggingface.co/google/gemma-2-2b-jpn-it) と高品質な音声合成エンジン [AivisSpeech-Engine](https://github.com/Aivis-Project/AivisSpeech-Engine) を組み合わせた音声つきのLLMチャットアプリです。アプリを構成する全てのサービスがローカルのCPU環境で稼働するため、非ネットワーク環境やGPUの利用できない環境でも利用することができます。
 
-![network](https://github.com/user-attachments/assets/901c9f55-e451-4703-84cd-2c7e597f7fc3)
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/901c9f55-e451-4703-84cd-2c7e597f7fc3" alt="network" width="70%"></img>
+</p>
 
 ## 🎞Demo Video
 
@@ -48,5 +50,5 @@ Google より 2024年10月3日 に公開された [google/gemma-2-2b-it](https:/
 
 ### Chainlit
 
-2024年1月に正式リリースされた [chainlit](https://github.com/Chainlit/chainlit) をチャット UI のフレームワークとして利用しています。シンプルな利用であれば非常に簡潔なコードでアプリケーションを作成することができます。また添付ファイルの入力や音声出力など様々な IO への対応が可能であったり、その他のカスタマイズ性も高くなっています。
+2024年1月に正式リリースされた [Chainlit](https://github.com/Chainlit/chainlit) をチャット UI のフレームワークとして利用しています。シンプルな利用であれば非常に簡潔なコードでアプリケーションを作成することができます。また添付ファイルの入力や音声出力など様々な I/O への対応が可能であったり、その他のカスタマイズ性も高くなっています。
 
