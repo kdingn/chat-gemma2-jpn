@@ -1,2 +1,4 @@
 sample/* linguist-vendored
+etc/* linguist-vendored
+*.png binary
 *.mp4 binary
