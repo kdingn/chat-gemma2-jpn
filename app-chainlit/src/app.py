@@ -1,30 +1,29 @@
+import re
+import requests
+
 import aiohttp
 import chainlit as cl
 import emoji
 
-import requests
-import re
-
-SENTENCE_SPLITTERS = ["。", "！", "？"]
-PROMPT_TEMPLATE = """あなたは先生です。以下のことに注意して回答してください。
-* 箇条書きを避ける。
-* 丁寧な言葉遣いを心がける。
-* 自然な会話文で回答する。
-* 特殊文字の使用を避ける。
-* 課題がある場合は解決策を提示する。
-* 課題がない場合は補足情報を追加する。
-"""
 ENDPOINT_AIVISSPEECH = "http://api-aivisspeech:10101"
 ENDPOINT_LLM = "http://api-gemma2:8000/chat"
+SENTENCE_SPLITTERS = ["。", "！", "？"]
+PROMPT_TEMPLATE = """あなたは先生です。以下のことに注意して回答してください。
+* 自然な会話文で回答する。
+* 丁寧な言葉遣いで回答する。
+* 箇条書きを避ける。
+* 特殊文字の使用を避ける。
+"""
+START_MESSAGE = "こんにちは、なにかご用でしょうか。"
+ROLE_USER = "質問"
+ROLE_RESPONSE = "回答"
 
 
 def create_prompt(current_message, message_history=[]):
     prompt = PROMPT_TEMPLATE
     for message in message_history:
-        prompt += (
-            list(message.keys())[0] + ": " + list(message.values())[0] + "\n"
-        )
-    prompt += "質問: " + current_message + "\n回答: "
+        prompt += list(message.keys())[0] + ": " + list(message.values())[0] + "\n"
+    prompt += ROLE_USER + ": " + current_message + "\n" + ROLE_RESPONSE + ": "
     return prompt
 
 
@@ -68,24 +67,22 @@ async def create_voice_wav(text):
         ) as res:
             audio_data = await res.read()
 
-    # return res.content
     return audio_data
 
 
-async def create_response_elements(text, auto_play=True):
+async def create_audio_element(text, auto_play=False, show_name=True):
+    name = ""
+    if show_name:
+        if len(text) > 10:
+            name = text[:10] + "..."
+        else:
+            name = text
     audio = await create_voice_wav(text)
-    elements = [
-        cl.Audio(
-            name=text[:10] + "..." if len(text)>10 else text,
-            content=audio,
-            display="inline",
-            auto_play=auto_play,
-        )
-    ]
-    return elements
+    element = cl.Audio(name=name, content=audio, display="inline", auto_play=auto_play)
+    return element
 
 
-async def create_response_message(text):
+async def stream_request_response_message(text):
     endpoint = ENDPOINT_LLM
 
     message_history = cl.user_session.get("message_history")
@@ -98,46 +95,47 @@ async def create_response_message(text):
             yield clean_text(chunk)
 
 
-
-@cl.on_chat_start
-async def on_chat_start():
-    start_message = "こんにちは！なにかご用でしょうか．"
-
-    # initialize user session
-    cl.user_session.set("message_history", [])
-
-    # show start message
-    elements = await create_response_elements(start_message, auto_play=False)
-    await cl.Message(content=start_message, elements=elements).send()
-
-
-@cl.on_message
-async def main(input_message):
-    # show response on browser
+async def show_response_message(text):
+    message = cl.Message(content="")
     current_chunk = ""
     response_message = ""
-    msg = cl.Message(content="")
-    async for chunk in create_response_message(input_message.content):
+
+    # stream request
+    async for chunk in stream_request_response_message(text):
         if chunk:
-            await msg.stream_token(chunk)
+            await message.stream_token(chunk)
             current_chunk += chunk
             response_message += chunk
-            if any(
-                splitter in current_chunk for splitter in SENTENCE_SPLITTERS
-            ):
+            if any(splitter in current_chunk for splitter in SENTENCE_SPLITTERS):
                 splitted_sentences = split_sentences(
                     current_chunk, separator=SENTENCE_SPLITTERS
                 )
                 sentences = splitted_sentences[:-1]
                 current_chunk = splitted_sentences[-1]
                 for sentence in sentences:
-                    elements = await create_response_elements(sentence)
-                    msg.elements.extend(elements)
-                    await msg.update()
-    await msg.update()
+                    element = await create_audio_element(sentence)
+                    message.elements.append(element)
+                    await message.update()
+    await message.update()
 
-    # add messages to message hisotry
+    return response_message
+
+
+@cl.on_chat_start
+async def on_chat_start():
+    start_message = START_MESSAGE
+
+    cl.user_session.set("message_history", [])
+
+    element = await create_audio_element(start_message, show_name=False)
+    await cl.Message(content=start_message, elements=[element]).send()
+
+
+@cl.on_message
+async def main(input_message):
+    response_message = await show_response_message(input_message.content)
+
     message_history = cl.user_session.get("message_history")
-    message_history.append({"質問": input_message.content})
-    message_history.append({"回答": response_message})
+    message_history.append({ROLE_USER: input_message.content})
+    message_history.append({ROLE_RESPONSE: response_message})
     cl.user_session.set("message_history", message_history)
