@@ -9,11 +9,12 @@ ENDPOINT_AIVISSPEECH = "http://api-aivisspeech:10101"
 ENDPOINT_LLM = "http://api-gemma2:8000/chat"
 SENTENCE_SPLITTERS = ["。", "！", "？"]
 PROMPT_TEMPLATE = """あなたは先生です。以下のことに注意して回答してください。
-* 自然な会話文で回答する。
-* 丁寧な言葉遣いで回答する。
-* 質問内容を確認しないでください。
-* 箇条書きを避ける。
-* 特殊文字の使用を避ける。
+* 自然な会話文
+* 丁寧な言葉遣い
+* 詳細な説明を追加
+* 質問内容を確認しない
+* 箇条書きを避ける
+* 特殊文字を仕様しない
 """
 START_MESSAGE = "こんにちは、なにかご用でしょうか。"
 ROLE_USER = "質問"
@@ -49,6 +50,7 @@ async def create_voice_wav(text):
 
     async with aiohttp.ClientSession() as session:
         # get style id
+        ## style_id から音声合成モデルを変更してもよい
         endpoint_speakers = endpoint + "/speakers"
         async with session.get(endpoint_speakers) as res:
             speakers = await res.json()
@@ -114,7 +116,7 @@ async def show_response_message(text):
                 sentences = splitted_sentences[:-1]
                 current_chunk = splitted_sentences[-1]
                 for sentence in sentences:
-                    element = await create_audio_element(sentence)
+                    element = await create_audio_element(sentence, auto_play=True)
                     message.elements.append(element)
                     await message.update()
     await message.update()
