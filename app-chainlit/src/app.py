@@ -13,8 +13,8 @@ PROMPT_TEMPLATE = """あなたは先生です。以下のことに注意して�
 * 丁寧な言葉遣い
 * 詳細な説明を追加
 * 質問内容を確認しない
-* 箇条書きを避ける
-* 特殊文字を仕様しない
+* 箇条書きしない
+* 特殊文字を使用しない
 """
 START_MESSAGE = "こんにちは、なにかご用でしょうか。"
 ROLE_USER = "質問"
@@ -36,8 +36,6 @@ def split_sentences(sentences, separator):
 
 
 def clean_text(text):
-    text = text.replace(" *", "")
-    text = text.replace("* ", "")
     text = text.replace("*", "")
     text = text.replace("「", "")
     text = text.replace("」", "")
@@ -50,7 +48,6 @@ async def create_voice_wav(text):
 
     async with aiohttp.ClientSession() as session:
         # get style id
-        ## style_id から音声合成モデルを変更してもよい
         endpoint_speakers = endpoint + "/speakers"
         async with session.get(endpoint_speakers) as res:
             speakers = await res.json()
@@ -119,6 +116,8 @@ async def show_response_message(text):
                     element = await create_audio_element(sentence, auto_play=True)
                     message.elements.append(element)
                     await message.update()
+    # ignore last chunk without SENTENCE_SPLITTERS
+    # for example: \n\n\n...
     await message.update()
 
     return response_message
@@ -126,12 +125,9 @@ async def show_response_message(text):
 
 @cl.on_chat_start
 async def on_chat_start():
-    start_message = START_MESSAGE
+    await cl.Message(content=START_MESSAGE).send()
 
     cl.user_session.set("message_history", [])
-
-    element = await create_audio_element(start_message, show_name=False)
-    await cl.Message(content=start_message, elements=[element]).send()
 
 
 @cl.on_message
