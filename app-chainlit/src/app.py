@@ -1,9 +1,9 @@
 import re
-import requests
 
 import aiohttp
 import chainlit as cl
 import emoji
+import requests
 
 ENDPOINT_AIVISSPEECH = "http://api-aivisspeech:10101"
 ENDPOINT_LLM = "http://api-gemma2:8000/chat"
@@ -113,7 +113,7 @@ async def show_response_message(text):
                 sentences = splitted_sentences[:-1]
                 current_chunk = splitted_sentences[-1]
                 for sentence in sentences:
-                    element = await create_audio_element(sentence, auto_play=True)
+                    element = await create_audio_element(sentence, auto_play=False)
                     message.elements.append(element)
                     await message.update()
     # ignore last chunk without SENTENCE_SPLITTERS
