@@ -113,7 +113,7 @@ async def show_response_message(text):
                 sentences = splitted_sentences[:-1]
                 current_chunk = splitted_sentences[-1]
                 for sentence in sentences:
-                    element = await create_audio_element(sentence, auto_play=False)
+                    element = await create_audio_element(sentence, auto_play=True)
                     message.elements.append(element)
                     await message.update()
     # ignore last chunk without SENTENCE_SPLITTERS
