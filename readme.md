@@ -6,11 +6,11 @@ Google が開発した言語モデル [Gemma 2](https://huggingface.co/google/ge
     <img src="https://github.com/user-attachments/assets/901c9f55-e451-4703-84cd-2c7e597f7fc3" alt="network" width="70%"></img>
 </p>
 
-## 🎥 Demo Video
+## 🎥 デモ
 
 https://github.com/user-attachments/assets/d92a42cc-13f0-4966-82d3-3f258da6c56e
 
-## 🚀 Quickstart
+## 🚀 クイックスタート
 
 リポジトリをクローンする
 ```sh
