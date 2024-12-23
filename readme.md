@@ -1,4 +1,4 @@
-# 🗼Chat Gemma2 JPN
+# 🗼 Chat Gemma2 JPN
 
 Google が開発した言語モデル [Gemma 2](https://huggingface.co/google/gemma-2-2b-jpn-it) と高品質な音声合成エンジン [AivisSpeech-Engine](https://github.com/Aivis-Project/AivisSpeech-Engine) を組み合わせた音声つきのLLMチャットアプリです。アプリを構成する全てのサービスがローカルのCPU環境で稼働するため、非ネットワーク環境やGPUの利用できない環境でも利用することができます。
 
@@ -6,11 +6,11 @@ Google が開発した言語モデル [Gemma 2](https://huggingface.co/google/ge
     <img src="https://github.com/user-attachments/assets/901c9f55-e451-4703-84cd-2c7e597f7fc3" alt="network" width="70%"></img>
 </p>
 
-## 🎞Demo Video
+## 🎥 Demo Video
 
 https://github.com/user-attachments/assets/d92a42cc-13f0-4966-82d3-3f258da6c56e
 
-## 🚀Quick Start
+## 🚀 Quickstart
 
 リポジトリをクローンする
 ```sh
@@ -36,9 +36,7 @@ docker compose up --build -d
 
 ブラウザの http://localhost:8000 からアプリにアクセスする
 
-
-
-## ✨要素技術
+## ✨ 要素技術
 
 ### Gemma 2 JPN
 
