@@ -8,7 +8,7 @@ Google が開発した言語モデル [Gemma 2](https://huggingface.co/google/ge
 
 ## 🎞Demo Video
 
-動画を埋め込む
+https://github.com/user-attachments/assets/d92a42cc-13f0-4966-82d3-3f258da6c56e
 
 ## 🚀Quick Start
 
